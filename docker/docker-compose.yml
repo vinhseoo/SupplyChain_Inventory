@@ -1,0 +1,63 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: scim-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: scim_db
+      POSTGRES_USER: scim_user
+      POSTGRES_PASSWORD: scim_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - scim-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scim_user -d scim_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: scim-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass scim_redis_pass
+    volumes:
+      - redis_data:/data
+    networks:
+      - scim-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "scim_redis_pass", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: scim-pgadmin
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@scim.local
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - scim-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
+  pgadmin_data:
+
+networks:
+  scim-network:
+    driver: bridge
