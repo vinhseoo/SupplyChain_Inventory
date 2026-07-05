@@ -25,7 +25,7 @@ export const AppLayout: FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuthStore();
+  const { user, logout, hasPermission } = useAuthStore();
 
   const handleMenuClick = ({ key }: { key: string }) => {
     if (key === 'logout') {
@@ -78,14 +78,33 @@ export const AppLayout: FC = () => {
     },
   ];
 
+  // Helper to filter menu items recursively based on permissions
+  const filterMenuByPermissions = (items: any[]): any[] => {
+    return items
+      .map(item => {
+        if (item.children) {
+          const filteredChildren = filterMenuByPermissions(item.children);
+          if (filteredChildren.length === 0) return null;
+          return { ...item, children: filteredChildren };
+        }
+        if (item.key === '/users') {
+          return hasPermission('GET:/api/users') || hasPermission('GET:/api/roles') ? item : null;
+        }
+        return item;
+      })
+      .filter(Boolean);
+  };
+
+  const filteredMenuItems = filterMenuByPermissions(menuItems);
+
   const userDropdownItems = [
     {
-      key: 'profile',
+      key: '/profile',
       label: 'Thông tin cá nhân',
       icon: <UserOutlined />,
     },
     {
-      key: 'settings',
+      key: '/settings',
       label: 'Cài đặt tài khoản',
       icon: <SettingOutlined />,
     },
@@ -113,7 +132,7 @@ export const AppLayout: FC = () => {
           mode="inline"
           selectedKeys={[location.pathname]}
           defaultOpenKeys={['master-data', 'inventory', 'settings-group']}
-          items={menuItems}
+          items={filteredMenuItems}
           onClick={handleMenuClick}
         />
       </Sider>

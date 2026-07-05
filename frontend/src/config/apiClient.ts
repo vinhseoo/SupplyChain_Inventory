@@ -1,5 +1,7 @@
 import axios from 'axios';
-import { message } from 'antd';
+import { message, modal } from '@/utils/antd';
+
+let isForbiddenModalOpen = false;
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api',
@@ -38,13 +40,30 @@ apiClient.interceptors.response.use(
         // Token expired or invalid
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
         if (window.location.pathname !== '/login') {
           message.error('Phiên đăng nhập đã hết hạn');
           window.location.href = '/login';
         }
         break;
       case 403:
-        message.error('Bạn không có quyền thực hiện thao tác này');
+        if (!isForbiddenModalOpen) {
+          isForbiddenModalOpen = true;
+          modal.error({
+            title: 'Truy cập bị từ chối',
+            content: 'Bạn không có quyền thực hiện thao tác này. Vui lòng liên hệ quản trị viên để được cấp quyền.',
+            okText: 'Đồng ý',
+            onOk: () => {
+              isForbiddenModalOpen = false;
+            },
+            onCancel: () => {
+              isForbiddenModalOpen = false;
+            }
+          });
+        }
+        break;
+      case 400:
+        message.error(errorMessage);
         break;
       case 409:
         message.error(errorMessage);

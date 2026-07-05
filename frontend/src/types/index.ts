@@ -62,3 +62,62 @@ export interface TableParams {
   sort?: string;
   direction?: 'asc' | 'desc';
 }
+
+// ===== Role & Permission Types =====
+
+export interface PermissionResponse {
+  id: number;
+  name: string;
+  path: string;
+  method: string;
+  apiGroup: string;
+  description: string;
+}
+
+export type RoleType = 'ALL' | 'CUSTOM';
+
+export interface RoleResponse {
+  id: number;
+  name: string;
+  description?: string;
+  type: RoleType;
+  isActive: boolean;
+  permissions: PermissionResponse[];
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface RoleRequest {
+  name: string;
+  description?: string;
+  type: RoleType;
+  permissionIds?: number[];
+}
+
+// ===== User CRUD Types =====
+
+export interface UserCreateRequest {
+  email: string;
+  fullName: string;
+  password?: string;
+  phone?: string;
+  avatarUrl?: string;
+  roleIds: number[];
+}
+
+export interface UserUpdateRequest {
+  fullName: string;
+  phone?: string;
+  avatarUrl?: string;
+  roleIds: number[];
+}
+
+export interface ResetPasswordRequest {
+  newPassword?: string;
+}
+
+export interface ChangePasswordRequest {
+  oldPassword?: string;
+  newPassword?: string;
+}
+

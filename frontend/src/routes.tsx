@@ -6,6 +6,8 @@ import { AppLayout } from './components/layout/AppLayout';
 // Lazy-loaded pages
 const LoginPage = lazy(() => import('./features/auth/pages/LoginPage'));
 const DashboardPage = lazy(() => import('./features/dashboard/pages/DashboardPage'));
+const UsersPage = lazy(() => import('./features/auth/pages/UsersPage'));
+const ProfilePage = lazy(() => import('./features/auth/pages/ProfilePage'));
 
 const LoadingFallback = () => (
   <div className="flex justify-center items-center h-screen bg-gray-50">
@@ -23,6 +25,8 @@ export const AppRoutes = () => {
         {/* Protected routes */}
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/users" element={<UsersPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           {/* Default redirect inside AppLayout */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Route>
