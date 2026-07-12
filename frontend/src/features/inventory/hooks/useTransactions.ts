@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { transactionService, TransactionParams } from '@/services/transactionService';
+import { transactionService } from '@/services/transactionService';
+import type { TransactionParams } from '@/services/transactionService';
 import type { InventoryTransactionRequest } from '@/types';
 import { message } from 'antd';
 

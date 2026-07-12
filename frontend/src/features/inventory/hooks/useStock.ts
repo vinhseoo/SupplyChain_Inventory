@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { stockService, StockLevelParams, StockCardParams } from '@/services/stockService';
+import { stockService } from '@/services/stockService';
+import type { StockLevelParams, StockCardParams } from '@/services/stockService';
 
 export const useStockLevels = (params?: StockLevelParams) => {
   return useQuery({

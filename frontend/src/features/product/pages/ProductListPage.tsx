@@ -31,7 +31,8 @@ import {
   FolderOpenOutlined,
   TagsOutlined,
   InboxOutlined,
-  MinusCircleOutlined
+  MinusCircleOutlined,
+  UndoOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { DataTable } from '@/components/common/DataTable';
@@ -73,6 +74,13 @@ export const ProductListPage = () => {
   const [productUom, setProductUom] = useState<number | undefined>(undefined);
   const [productPage, setProductPage] = useState(0);
   const [productPageSize, setProductPageSize] = useState(20);
+
+  const handleResetProductFilters = () => {
+    setProductSearch('');
+    setProductCategory(undefined);
+    setProductUom(undefined);
+    setProductPage(0);
+  };
   
   const [uomSearch, setUomSearch] = useState('');
   const [uomPage, setUomPage] = useState(0);
@@ -652,6 +660,13 @@ export const ProductListPage = () => {
                 allowClear
                 options={uomsData?.content?.map(u => ({ label: u.name, value: u.id }))}
               />
+              <Button 
+                icon={<UndoOutlined />} 
+                onClick={handleResetProductFilters}
+                style={{ borderRadius: 8 }}
+              >
+                Xóa bộ lọc
+              </Button>
             </Space>
             <Space>
               {hasPermission('POST:/api/products/import') && (

@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { 
-  Space, 
+  Button,
   Card, 
   Select, 
   DatePicker, 
   Tag 
 } from 'antd';
+import { UndoOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { DataTable } from '@/components/common/DataTable';
@@ -27,6 +28,15 @@ export const StockCardPage = () => {
 
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(20);
+
+  const handleResetFilters = () => {
+    setProductId(undefined);
+    setWarehouseId(undefined);
+    setLocationId(undefined);
+    setLocations([]);
+    setDates(null);
+    setPage(0);
+  };
 
   // Fetch Master Data
   const { data: productsData } = useProducts({ page: 0, size: 200 });
@@ -203,6 +213,13 @@ export const StockCardPage = () => {
               onChange={(val) => setDates(val as any)}
               style={{ borderRadius: 8 }}
             />
+            <Button 
+              icon={<UndoOutlined />} 
+              onClick={handleResetFilters}
+              style={{ borderRadius: 8 }}
+            >
+              Xóa bộ lọc
+            </Button>
           </div>
 
           <DataTable

@@ -11,8 +11,7 @@ import {
   Row, 
   Col, 
   message, 
-  Divider,
-  Typography
+  Divider
 } from 'antd';
 import { 
   PlusOutlined, 
@@ -38,7 +37,7 @@ import { transactionService } from '@/services/transactionService';
 import type { LocationResponse, InventoryTransactionRequest } from '@/types';
 import dayjs from 'dayjs';
 
-const { Title } = Typography;
+
 
 export const TransactionFormPage = () => {
   const navigate = useNavigate();
@@ -59,7 +58,7 @@ export const TransactionFormPage = () => {
   const { data: suppliersData } = useSuppliers({ page: 0, size: 100 });
   const { data: warehousesData } = useWarehouses({ page: 0, size: 100 });
 
-  const { data: existingTx, isLoading: isTxLoading } = useTransaction(id ? parseInt(id) : undefined);
+  const { data: existingTx } = useTransaction(id ? parseInt(id) : undefined);
 
   // Mutations
   const createMutation = useCreateTransaction();
@@ -214,7 +213,7 @@ export const TransactionFormPage = () => {
         updateMutation.mutate({ id: txId, data: payload }, {
           onSuccess: (res) => {
             if (shouldSubmit) {
-              submitMutation.mutate(res.id, {
+              submitMutation.mutate(res.data.id, {
                 onSuccess: () => navigate('/inventory/transactions')
               });
             } else {
@@ -226,7 +225,7 @@ export const TransactionFormPage = () => {
         createMutation.mutate(payload, {
           onSuccess: (res) => {
             if (shouldSubmit) {
-              submitMutation.mutate(res.id, {
+              submitMutation.mutate(res.data.id, {
                 onSuccess: () => navigate('/inventory/transactions')
               });
             } else {
@@ -388,7 +387,7 @@ export const TransactionFormPage = () => {
                         label="Đơn giá"
                         rules={[{ required: true, message: 'Nhập đơn giá' }]}
                       >
-                        <InputNumber min={0} className="w-full" formatter={val => `${val}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} parser={val => val!.replace(/\$\s?|(,*)/g, '')} placeholder="0" />
+                        <InputNumber min={0} className="w-full" formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} parser={(value) => (value ? parseFloat(value.replace(/\$\s?|(,*)/g, '')) : 0) as any} placeholder="0" />
                       </Form.Item>
 
                       {/* Outbound Suggest Button */}

@@ -22,8 +22,8 @@ public interface InventoryTransactionRepository extends JpaRepository<InventoryT
            "OR LOWER(t.note) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))) " +
            "AND (:type IS NULL OR t.type = :type) " +
            "AND (:status IS NULL OR t.status = :status) " +
-           "AND (:startDate IS NULL OR t.transactionDate >= :startDate) " +
-           "AND (:endDate IS NULL OR t.transactionDate <= :endDate)")
+           "AND (CAST(:startDate AS timestamp) IS NULL OR t.transactionDate >= :startDate) " +
+           "AND (CAST(:endDate AS timestamp) IS NULL OR t.transactionDate <= :endDate)")
     Page<InventoryTransaction> findWithFilters(@Param("search") String search,
                                                @Param("type") TransactionType type,
                                                @Param("status") TransactionStatus status,

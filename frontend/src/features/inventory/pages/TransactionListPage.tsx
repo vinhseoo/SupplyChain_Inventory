@@ -25,7 +25,8 @@ import {
   CheckOutlined,
   SendOutlined,
   CloseOutlined,
-  PlayCircleOutlined
+  PlayCircleOutlined,
+  UndoOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { PageContainer } from '@/components/layout/PageContainer';
@@ -57,10 +58,16 @@ export const TransactionListPage = () => {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(20);
   
-  const [selectedTxId, setSelectedTxId] = useState<number | null>(null);
   const [detailVisible, setDetailVisible] = useState(false);
   const [selectedTx, setSelectedTx] = useState<InventoryTransactionResponse | null>(null);
-  const [rejectReason, setRejectReason] = useState('');
+
+  const handleResetFilters = () => {
+    setSearch('');
+    setType(undefined);
+    setStatus(undefined);
+    setDates(null);
+    setPage(0);
+  };
 
   // Fetch Transactions
   const params = {
@@ -384,6 +391,13 @@ export const TransactionListPage = () => {
                 onChange={(val) => setDates(val as any)}
                 style={{ borderRadius: 8 }}
               />
+              <Button 
+                icon={<UndoOutlined />} 
+                onClick={handleResetFilters}
+                style={{ borderRadius: 8 }}
+              >
+                Xóa bộ lọc
+              </Button>
             </Space>
             {canWrite && (
               <Button 

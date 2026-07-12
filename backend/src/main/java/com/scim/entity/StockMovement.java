@@ -1,10 +1,13 @@
 package com.scim.entity;
 
-import com.scim.entity.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "stock_movements")
@@ -13,7 +16,12 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StockMovement extends BaseEntity {
+@EntityListeners(AuditingEntityListener.class)
+public class StockMovement {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
@@ -47,4 +55,13 @@ public class StockMovement extends BaseEntity {
 
     @Column(name = "balance_after", nullable = false, precision = 19, scale = 4)
     private BigDecimal balanceAfter;
+
+    @CreatedDate
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @CreatedBy
+    @Column(name = "created_by", updatable = false)
+    private String createdBy;
 }
+

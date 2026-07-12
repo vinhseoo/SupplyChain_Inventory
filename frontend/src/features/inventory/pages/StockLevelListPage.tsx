@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { 
   Input, 
-  Space, 
+  Button,
   Card, 
   Select, 
   Tag 
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined, UndoOutlined } from '@ant-design/icons';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { DataTable } from '@/components/common/DataTable';
 import { useStockLevels } from '../hooks/useStock';
@@ -24,6 +24,14 @@ export const StockLevelListPage = () => {
   
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(20);
+
+  const handleResetFilters = () => {
+    setSearch('');
+    setWarehouseId(undefined);
+    setLocationId(undefined);
+    setLocations([]);
+    setPage(0);
+  };
 
   // Fetch Master Data
   const { data: warehousesData } = useWarehouses({ page: 0, size: 100 });
@@ -147,6 +155,13 @@ export const StockLevelListPage = () => {
               disabled={!warehouseId}
               options={locations.map(loc => ({ label: loc.name, value: loc.id }))}
             />
+            <Button 
+              icon={<UndoOutlined />} 
+              onClick={handleResetFilters}
+              style={{ borderRadius: 8 }}
+            >
+              Xóa bộ lọc
+            </Button>
           </div>
 
           <DataTable
