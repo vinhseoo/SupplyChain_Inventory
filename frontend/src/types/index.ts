@@ -290,4 +290,126 @@ export interface ProductImportSummary {
   errorDetails: string[];
 }
 
+// ===== Inventory Transactions & Stock Levels =====
+
+export type TransactionType = 'INBOUND' | 'OUTBOUND' | 'TRANSFER';
+export type TransactionStatus = 'DRAFT' | 'PENDING' | 'APPROVED' | 'COMPLETED' | 'CANCELLED';
+export type StockMovementType = 'INBOUND' | 'OUTBOUND' | 'TRANSFER_OUT' | 'TRANSFER_IN' | 'ADJUSTMENT';
+
+export interface TransactionItemRequest {
+  productId: number;
+  quantity: number;
+  price: number;
+  sourceLocationId?: number;
+  destinationLocationId?: number;
+  batchNumber?: string;
+  productionDate?: string;
+  expiryDate?: string;
+  note?: string;
+}
+
+export interface TransactionItemResponse {
+  id: number;
+  productId: number;
+  productCode: string;
+  productName: string;
+  productSku: string;
+  uomName: string;
+  quantity: number;
+  price: number;
+  sourceLocationId?: number;
+  sourceLocationName?: string;
+  sourceLocationCode?: string;
+  destinationLocationId?: number;
+  destinationLocationName?: string;
+  destinationLocationCode?: string;
+  batchNumber?: string;
+  productionDate?: string;
+  expiryDate?: string;
+  note?: string;
+}
+
+export interface InventoryTransactionRequest {
+  code: string;
+  type: TransactionType;
+  sourceWarehouseId?: number;
+  destinationWarehouseId?: number;
+  supplierId?: number;
+  transactionDate?: string;
+  note?: string;
+  items: TransactionItemRequest[];
+}
+
+export interface InventoryTransactionResponse {
+  id: number;
+  code: string;
+  type: TransactionType;
+  status: TransactionStatus;
+  sourceWarehouseId?: number;
+  sourceWarehouseName?: string;
+  sourceWarehouseCode?: string;
+  destinationWarehouseId?: number;
+  destinationWarehouseName?: string;
+  destinationWarehouseCode?: string;
+  supplierId?: number;
+  supplierName?: string;
+  supplierCode?: string;
+  totalAmount: number;
+  transactionDate: string;
+  note?: string;
+  items: TransactionItemResponse[];
+  createdAt: string;
+  updatedAt?: string;
+  createdBy?: string;
+  updatedBy?: string;
+  version: number;
+}
+
+export interface StockLevelResponse {
+  id: number;
+  productId: number;
+  productCode: string;
+  productName: string;
+  productSku: string;
+  productBarcode?: string;
+  warehouseId: number;
+  warehouseName: string;
+  warehouseCode: string;
+  locationId: number;
+  locationCode: string;
+  locationName: string;
+  batchId?: number;
+  batchNumber?: string;
+  expiryDate?: string;
+  quantity: number;
+  reservedQuantity: number;
+  uomName: string;
+}
+
+export interface StockMovementResponse {
+  id: number;
+  productId: number;
+  productCode: string;
+  productName: string;
+  productSku: string;
+  uomName: string;
+  warehouseId: number;
+  warehouseName: string;
+  warehouseCode: string;
+  locationId: number;
+  locationCode: string;
+  locationName: string;
+  batchId?: number;
+  batchNumber?: string;
+  transactionId?: number;
+  transactionCode?: string;
+  type: StockMovementType;
+  quantity: number;
+  balanceBefore: number;
+  balanceAfter: number;
+  createdAt: string;
+  createdBy: string;
+}
+
+
 

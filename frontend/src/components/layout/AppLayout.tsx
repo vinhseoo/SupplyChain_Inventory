@@ -55,11 +55,11 @@ export const AppLayout: FC = () => {
     {
       key: 'inventory',
       icon: <SolutionOutlined />,
-      label: 'Nhập / Xuất kho',
+      label: 'Quản lý kho',
       children: [
-        { key: '/inbound', label: 'Nhập kho (Inbound)' },
-        { key: '/outbound', label: 'Xuất kho (Outbound)' },
-        { key: '/transfer', label: 'Chuyển kho', icon: <SwapOutlined /> },
+        { key: '/inventory/transactions', label: 'Giao dịch kho' },
+        { key: '/inventory/stock-levels', label: 'Tồn kho hiện tại' },
+        { key: '/inventory/stock-card', label: 'Thẻ kho (Stock Card)', icon: <SwapOutlined /> },
       ],
     },
     {
@@ -98,6 +98,15 @@ export const AppLayout: FC = () => {
         }
         if (item.key === '/products') {
           return hasPermission('GET:/api/products') ? item : null;
+        }
+        if (item.key === '/inventory/transactions') {
+          return hasPermission('GET:/api/inventory/transactions') ? item : null;
+        }
+        if (item.key === '/inventory/stock-levels') {
+          return hasPermission('GET:/api/inventory/stock-levels') ? item : null;
+        }
+        if (item.key === '/inventory/stock-card') {
+          return hasPermission('GET:/api/inventory/stock-levels/history') ? item : null;
         }
         return item;
       })
