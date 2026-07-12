@@ -8,6 +8,9 @@ const LoginPage = lazy(() => import('./features/auth/pages/LoginPage'));
 const DashboardPage = lazy(() => import('./features/dashboard/pages/DashboardPage'));
 const UsersPage = lazy(() => import('./features/auth/pages/UsersPage'));
 const ProfilePage = lazy(() => import('./features/auth/pages/ProfilePage'));
+const SupplierListPage = lazy(() => import('./features/supplier/pages/SupplierListPage'));
+const WarehouseListPage = lazy(() => import('./features/warehouse/pages/WarehouseListPage'));
+const ProductListPage = lazy(() => import('./features/product/pages/ProductListPage'));
 
 const LoadingFallback = () => (
   <div className="flex justify-center items-center h-screen bg-gray-50">
@@ -27,6 +30,9 @@ export const AppRoutes = () => {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/users" element={<UsersPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/suppliers" element={<SupplierListPage />} />
+          <Route path="/warehouses" element={<WarehouseListPage />} />
+          <Route path="/products" element={<ProductListPage />} />
           {/* Default redirect inside AppLayout */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Route>

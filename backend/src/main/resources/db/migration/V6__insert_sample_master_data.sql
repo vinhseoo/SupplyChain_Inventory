@@ -1,0 +1,69 @@
+-- -- =============================================
+-- -- V6: Insert sample master data for Phase 2
+-- -- =============================================
+--
+-- -- 1. Insert Suppliers
+-- INSERT INTO suppliers (code, name, contact_name, email, phone, tax_code, address, note, is_active, created_by, version)
+-- VALUES
+-- ('SUP-001', 'Công ty Cổ phần Bán lẻ An Phong', 'Nguyễn Văn Trỗi', 'anphong@retail.com', '0901234567', '0102030405', '123 Đường Ba Tháng Hai, Quận 10, TP.HCM', 'Nhà cung cấp điện thoại & laptop sỉ lẻ', TRUE, 'system', 0),
+-- ('SUP-002', 'Tổng Kho Gia Dụng Minh Long', 'Trần Minh Long', 'minhlong@giadung.com', '0912345678', '0203040506', '456 Đường Nguyễn Trãi, Thanh Xuân, Hà Nội', 'Nhà cung cấp đồ điện gia dụng và nhà bếp', TRUE, 'system', 0),
+-- ('SUP-003', 'Nhà phân phối Điện máy TechMart', 'Lê Thu Hà', 'sales@techmart.com', '0987654321', '0304050607', '789 Đường Điện Biên Phủ, Bình Thạnh, TP.HCM', 'Cung cấp phụ kiện điện tử', TRUE, 'system', 0);
+--
+-- -- 2. Insert Warehouses
+-- INSERT INTO warehouses (code, name, address, description, is_active, created_by, version)
+-- VALUES
+-- ('WH-001', 'Kho trung tâm Hà Nội', 'Số 1, Lĩnh Nam, Hoàng Mai, Hà Nội', 'Kho chứa sản phẩm gia dụng và linh kiện miền Bắc', TRUE, 'system', 0),
+-- ('WH-002', 'Kho trung tâm HCM', 'Số 10, Song Hành, Quận 12, TP.HCM', 'Kho chứa hàng thực phẩm khô và điện tử miền Nam', TRUE, 'system', 0);
+--
+-- -- 3. Insert Locations (Zone -> Aisle -> Shelf -> Bin)
+-- -- For WH-001 (id=1):
+-- INSERT INTO locations (code, name, warehouse_id, parent_id, type, description, is_active, created_by, version) VALUES
+-- ('ZONE-A', 'Phân khu A (Hàng gia dụng)', 3, NULL, 'ZONE', 'Khu vực lưu trữ hàng gia dụng', TRUE, 'system', 0); -- id=1
+--
+-- INSERT INTO locations (code, name, warehouse_id, parent_id, type, description, is_active, created_by, version) VALUES
+-- ('AISLE-A1', 'Dãy A1', 3, 2, 'AISLE', 'Lối đi dãy A1', TRUE, 'system', 0); -- id=2
+--
+-- INSERT INTO locations (code, name, warehouse_id, parent_id, type, description, is_active, created_by, version) VALUES
+-- ('SHELF-A1-01', 'Kệ A1-01', 3, 3, 'SHELF', 'Kệ tầng 1 dãy A1', TRUE, 'system', 0); -- id=3
+--
+-- INSERT INTO locations (code, name, warehouse_id, parent_id, type, description, is_active, created_by, version) VALUES
+-- ('BIN-A1-01-A', 'Hộc chứa A1-01-A', 3, 4, 'BIN', 'Hộc chứa hàng A', TRUE, 'system', 0); -- id=4
+--
+-- -- For WH-002 (id=2):
+-- INSERT INTO locations (code, name, warehouse_id, parent_id, type, description, is_active, created_by, version) VALUES
+-- ('ZONE-B', 'Phân khu B (Hàng điện tử)', 5, NULL, 'ZONE', 'Khu vực lưu trữ hàng điện tử', TRUE, 'system', 0); -- id=5
+--
+-- INSERT INTO locations (code, name, warehouse_id, parent_id, type, description, is_active, created_by, version) VALUES
+-- ('AISLE-B1', 'Dãy B1', 4, 5, 'AISLE', 'Lối đi dãy B1', TRUE, 'system', 0); -- id=6
+--
+-- INSERT INTO locations (code, name, warehouse_id, parent_id, type, description, is_active, created_by, version) VALUES
+-- ('SHELF-B1-01', 'Kệ B1-01', 4, 6, 'SHELF', 'Kệ tầng 1 dãy B1', TRUE, 'system', 0); -- id=7
+--
+-- -- 4. Insert Categories
+-- INSERT INTO categories (code, name, parent_id, description, is_active, created_by, version) VALUES
+-- ('ELEC', 'Thiết bị điện tử', NULL, 'Thiết bị điện thoại, máy tính, phụ kiện công nghệ', TRUE, 'system', 0); -- id=1
+--
+-- INSERT INTO categories (code, name, parent_id, description, is_active, created_by, version) VALUES
+-- ('MOBILE', 'Điện thoại di động', 1, 'Điện thoại thông minh các hãng', TRUE, 'system', 0), -- id=2
+-- ('LAPTOP', 'Máy tính xách tay', 1, 'Máy tính cá nhân, laptop văn phòng, đồ họa', TRUE, 'system', 0); -- id=3
+--
+-- INSERT INTO categories (code, name, parent_id, description, is_active, created_by, version) VALUES
+-- ('APPL', 'Điện gia dụng', NULL, 'Đồ gia dụng nhà bếp, phòng khách', TRUE, 'system', 0); -- id=4
+--
+-- INSERT INTO categories (code, name, parent_id, description, is_active, created_by, version) VALUES
+-- ('KITCHEN', 'Đồ dùng nhà bếp', 4, 'Nồi cơm điện, nồi chiên không dầu, bếp từ', TRUE, 'system', 0); -- id=5
+--
+-- -- 5. Insert Units of Measure (UOMs)
+-- INSERT INTO units_of_measure (code, name, description, is_active, created_by, version)
+-- VALUES
+-- ('PCS', 'Cái', 'Đơn vị đếm chiếc đơn lẻ', TRUE, 'system', 0), -- id=1
+-- ('BOX', 'Hộp', 'Hộp đóng gói carton nhỏ', TRUE, 'system', 0), -- id=2
+-- ('KG', 'Kilogam', 'Đơn vị khối lượng tiêu chuẩn', TRUE, 'system', 0), -- id=3
+-- ('PACK', 'Gói', 'Bịch hoặc túi gói nhỏ', TRUE, 'system', 0); -- id=4
+--
+-- -- 6. Insert Products
+-- INSERT INTO products (code, name, sku, barcode, category_id, uom_id, description, minimum_stock, maximum_stock, price, properties, is_active, created_by, version)
+-- VALUES
+-- ('PROD-001', 'iPhone 15 Pro Max 256GB', 'SKU-IP15PM256', '8930123456701', 2, 1, 'Điện thoại thông minh Apple iPhone 15 Pro Max phiên bản 256GB', 5, 50, 29000000, '{"color": "Titan Tự Nhiên", "weight": "221g", "battery": "4441mAh"}'::jsonb, TRUE, 'system', 0),
+-- ('PROD-002', 'MacBook Air M3 13 Inch', 'SKU-MBA313256', '8930123456702', 3, 1, 'Máy tính xách tay Apple MacBook Air chip M3 13-inch', 3, 30, 26500000, '{"cpu": "Apple M3", "ram": "8GB", "ssd": "256GB", "color": "Space Grey"}'::jsonb, TRUE, 'system', 0),
+-- ('PROD-003', 'Nồi chiên không dầu Philips HD9252', 'SKU-NCKDP9252', '8930123456703', 5, 1, 'Nồi chiên chân không cơ học hãng Philips dung tích 4.1L', 10, 100, 2450000, '{"capacity": "4.1L", "power": "1400W", "color": "Glossy Black"}'::jsonb, TRUE, 'system', 0);

@@ -90,6 +90,15 @@ export const AppLayout: FC = () => {
         if (item.key === '/users') {
           return hasPermission('GET:/api/users') || hasPermission('GET:/api/roles') ? item : null;
         }
+        if (item.key === '/suppliers') {
+          return hasPermission('GET:/api/suppliers') ? item : null;
+        }
+        if (item.key === '/warehouses') {
+          return hasPermission('GET:/api/warehouses') ? item : null;
+        }
+        if (item.key === '/products') {
+          return hasPermission('GET:/api/products') ? item : null;
+        }
         return item;
       })
       .filter(Boolean);
@@ -136,8 +145,8 @@ export const AppLayout: FC = () => {
           onClick={handleMenuClick}
         />
       </Sider>
-      <Layout>
-        <Header className="h-16 px-6 bg-white flex justify-between items-center border-b border-gray-200">
+      <Layout style={{ minWidth: 0 }}>
+        <Header className="h-16 px-6 bg-white flex justify-between items-center border-b border-gray-200" style={{ padding: '0 24px' }}>
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}

@@ -121,3 +121,173 @@ export interface ChangePasswordRequest {
   newPassword?: string;
 }
 
+// ===== Supplier Types =====
+
+export interface SupplierRequest {
+  code: string;
+  name: string;
+  contactName?: string;
+  email?: string;
+  phone?: string;
+  taxCode?: string;
+  address?: string;
+  note?: string;
+  isActive?: boolean;
+}
+
+export interface SupplierResponse {
+  id: number;
+  code: string;
+  name: string;
+  contactName?: string;
+  email?: string;
+  phone?: string;
+  taxCode?: string;
+  address?: string;
+  note?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+// ===== Warehouse & Location Types =====
+
+export interface WarehouseRequest {
+  code: string;
+  name: string;
+  address?: string;
+  description?: string;
+  isActive?: boolean;
+}
+
+export interface WarehouseResponse {
+  id: number;
+  code: string;
+  name: string;
+  address?: string;
+  description?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface LocationRequest {
+  code: string;
+  name: string;
+  warehouseId: number;
+  parentId?: number;
+  type: string;
+  description?: string;
+  isActive?: boolean;
+}
+
+export interface LocationResponse {
+  id: number;
+  code: string;
+  name: string;
+  warehouseId: number;
+  warehouseName: string;
+  parentId?: number;
+  parentName?: string;
+  type: string;
+  description?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface LocationNodeResponse {
+  id: number;
+  code: string;
+  name: string;
+  type: string;
+  parentId?: number;
+  description?: string;
+  isActive: boolean;
+  children: LocationNodeResponse[];
+}
+
+// ===== Category & UOM Types =====
+
+export interface CategoryRequest {
+  code: string;
+  name: string;
+  parentId?: number;
+  description?: string;
+  isActive?: boolean;
+}
+
+export interface CategoryResponse {
+  id: number;
+  code: string;
+  name: string;
+  parentId?: number;
+  parentName?: string;
+  description?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface UnitOfMeasureRequest {
+  code: string;
+  name: string;
+  description?: string;
+  isActive?: boolean;
+}
+
+export interface UnitOfMeasureResponse {
+  id: number;
+  code: string;
+  name: string;
+  description?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+// ===== Product Types =====
+
+export interface ProductRequest {
+  code: string;
+  name: string;
+  sku: string;
+  barcode?: string;
+  categoryId?: number;
+  uomId?: number;
+  description?: string;
+  minimumStock: number;
+  maximumStock: number;
+  price: number;
+  properties?: Record<string, any>;
+  isActive?: boolean;
+}
+
+export interface ProductResponse {
+  id: number;
+  code: string;
+  name: string;
+  sku: string;
+  barcode?: string;
+  categoryId?: number;
+  categoryName?: string;
+  uomId?: number;
+  uomName?: string;
+  description?: string;
+  minimumStock: number;
+  maximumStock: number;
+  price: number;
+  properties?: Record<string, any>;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface ProductImportSummary {
+  totalProcessed: number;
+  totalSuccess: number;
+  totalFailed: number;
+  errorDetails: string[];
+}
+
+

@@ -16,9 +16,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
 
     @Query("SELECT u FROM User u WHERE " +
-           "(:search IS NULL OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%')) " +
-           "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) " +
-           "OR LOWER(u.phone) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "(CAST(:search AS string) IS NULL OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) " +
+           "OR LOWER(u.email) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) " +
+           "OR LOWER(u.phone) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))) " +
            "AND (:isActive IS NULL OR u.isActive = :isActive)")
     Page<User> findWithFilters(@Param("search") String search,
                                @Param("isActive") Boolean isActive,

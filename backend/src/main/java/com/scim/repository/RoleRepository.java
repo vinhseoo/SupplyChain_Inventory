@@ -16,8 +16,8 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
     boolean existsByName(String name);
 
     @Query("SELECT r FROM Role r WHERE " +
-           "(:search IS NULL OR LOWER(r.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
-           "OR LOWER(r.description) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "(CAST(:search AS string) IS NULL OR LOWER(r.name) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) " +
+           "OR LOWER(r.description) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))) " +
            "AND (:isActive IS NULL OR r.isActive = :isActive)")
     Page<Role> findWithFilters(@Param("search") String search,
                                @Param("isActive") Boolean isActive,

@@ -26,7 +26,7 @@ export const PageContainer: FC<PageContainerProps> = ({ title, extra, children }
   ];
 
   return (
-    <div className="p-6 min-h-screen bg-gray-50">
+    <div className="p-6 min-h-screen bg-gray-50" style={{ padding: '24px', background: '#f5f5f5', width: '100%' }}>
       <div className="mb-6">
         <Breadcrumb items={breadcrumbItems} className="mb-2" />
         <div className="flex justify-between items-center">
