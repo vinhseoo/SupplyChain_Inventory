@@ -25,6 +25,9 @@ const NotificationListPage = lazy(() => import('./features/system/pages/Notifica
 const SystemSettingsPage = lazy(() => import('./features/system/pages/SystemSettingsPage'));
 const AuditLogListPage = lazy(() => import('./features/system/pages/AuditLogListPage'));
 
+const SlowMovingReportPage = lazy(() => import('./features/dashboard/pages/SlowMovingReportPage'));
+const ForecastReportPage = lazy(() => import('./features/dashboard/pages/ForecastReportPage'));
+
 const LoadingFallback = () => (
   <div className="flex justify-center items-center h-screen bg-gray-50">
     <Spin size="large" tip="Đang tải hệ thống..." />
@@ -60,6 +63,9 @@ export const AppRoutes = () => {
           <Route path="/notifications" element={<NotificationListPage />} />
           <Route path="/settings/system" element={<SystemSettingsPage />} />
           <Route path="/settings/audit-logs" element={<AuditLogListPage />} />
+          
+          <Route path="/analytics/slow-moving" element={<SlowMovingReportPage />} />
+          <Route path="/analytics/forecast" element={<ForecastReportPage />} />
           {/* Default redirect inside AppLayout */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Route>

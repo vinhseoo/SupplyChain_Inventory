@@ -51,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/qr-code/**").permitAll()
+                        .requestMatchers("/analytics/stock-realtime").permitAll()
                         .requestMatchers("/roles/active").authenticated()
                         .requestMatchers("/users/me", "/users/change-password", "/users/avatar").authenticated()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()

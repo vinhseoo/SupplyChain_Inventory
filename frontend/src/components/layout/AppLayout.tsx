@@ -14,7 +14,9 @@ import {
   SettingOutlined,
   LogoutOutlined,
   GlobalOutlined,
-  SwapOutlined
+  SwapOutlined,
+  BarChartOutlined,
+  LineChartOutlined
 } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
@@ -150,6 +152,15 @@ export const AppLayout: FC = () => {
       ]
     },
     {
+      key: 'analytics-group',
+      icon: <BarChartOutlined />,
+      label: 'Báo cáo & Phân tích',
+      children: [
+        { key: '/analytics/slow-moving', label: 'Tồn kho chậm biến động', icon: <LineChartOutlined /> },
+        { key: '/analytics/forecast', label: 'Dự báo hết hàng', icon: <BarChartOutlined /> },
+      ],
+    },
+    {
       key: 'settings-group',
       icon: <SettingOutlined />,
       label: 'Hệ thống',
@@ -205,6 +216,9 @@ export const AppLayout: FC = () => {
         }
         if (item.key === '/settings/audit-logs') {
           return hasPermission('GET:/api/audit-logs/activity') ? item : null;
+        }
+        if (item.key === '/analytics/slow-moving' || item.key === '/analytics/forecast') {
+          return hasPermission('GET:/api/analytics/kpis') ? item : null;
         }
         return item;
       })

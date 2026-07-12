@@ -31,6 +31,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.context.ApplicationEventPublisher;
 import com.scim.event.TransactionStatusEvent;
+import com.scim.event.StockChangeEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -236,7 +237,18 @@ public class InventoryTransactionServiceImpl implements InventoryTransactionServ
 
             transaction.setStatus(TransactionStatus.COMPLETED);
             transaction = transactionRepository.save(transaction);
+            
+            // Publish status updates
             eventPublisher.publishEvent(new TransactionStatusEvent(this, transaction));
+            
+            // Publish StockChangeEvents
+            transaction.getItems().stream()
+                    .map(TransactionItem::getProduct)
+                    .distinct()
+                    .forEach(product -> eventPublisher.publishEvent(
+                            new StockChangeEvent(this, product.getId(), product.getSku(), product.getName())
+                    ));
+
             log.info("Completed transaction and updated stock: {}", transaction.getCode());
             return transactionMapper.toResponse(transaction);
 
