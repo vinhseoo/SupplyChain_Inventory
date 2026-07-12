@@ -9,9 +9,11 @@ import {
   Space, 
   Modal, 
   Typography,
-  Tag
+  Tag,
+  Image,
+  message
 } from 'antd';
-import { SearchOutlined, UndoOutlined, PrinterOutlined } from '@ant-design/icons';
+import { SearchOutlined, UndoOutlined, PrinterOutlined, DownloadOutlined } from '@ant-design/icons';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { useStockLevels } from '@/features/inventory/hooks/useStock';
 import { useWarehouses } from '@/features/warehouse/hooks/useWarehouses';
@@ -28,6 +30,26 @@ export const BatchQrPrintPage = () => {
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<StockLevelResponse[]>([]);
+
+  const handleDownloadQr = (qrText: string, fileName: string) => {
+    const url = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'}/qr-code?text=${encodeURIComponent(qrText)}`;
+    fetch(url)
+      .then(response => response.blob())
+      .then(blob => {
+        const blobUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(blobUrl);
+      })
+      .catch(err => {
+        console.error('Failed to download QR code', err);
+        message.error('Không thể tải xuống mã QR');
+      });
+  };
 
   const [printQuantities, setPrintQuantities] = useState<Record<number, number>>({});
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
@@ -243,62 +265,84 @@ export const BatchQrPrintPage = () => {
     const items: React.ReactNode[] = [];
     selectedRows.forEach(row => {
       const qty = printQuantities[row.id] || 1;
-      const qrText = row.batchNumber ? `SCIM:BATCH:${row.batchNumber}` : `SCIM:PROD:${row.productSku}`;
-      
-      for (let i = 0; i < qty; i++) {
-        items.push(
-          <div 
-            className="decal-card" 
-            key={`${row.id}-${i}`}
-            style={{ 
-              border: '1.5px dashed #999',
-              borderRadius: '10px',
-              padding: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '16px',
-              background: '#fff',
-              pageBreakInside: 'avoid',
-              minHeight: '110px'
-            }}
-          >
-            <img 
+      const qrText = row.batchNumber 
+        ? `SCIM:BATCH:${row.batchNumber}:QTY:${qty}` 
+        : `SCIM:PROD:${row.productSku}:QTY:${qty}`;
+      const downloadFileName = row.batchNumber 
+        ? `QR_${row.productSku}_${row.batchNumber}_qty${qty}.png`
+        : `QR_${row.productSku}_qty${qty}.png`;
+
+      items.push(
+        <div 
+          className="decal-card" 
+          key={row.id}
+          style={{ 
+            border: '1.5px dashed #999',
+            borderRadius: '10px',
+            padding: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '16px',
+            background: '#fff',
+            pageBreakInside: 'avoid',
+            minHeight: '120px',
+            position: 'relative'
+          }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }} className="flex-shrink-0">
+            <Image 
               className="decal-qr"
-              style={{ width: '100px', height: '100px', flexShrink: 0, border: '1px solid #eee', borderRadius: '6px' }}
+              style={{ width: '100px', height: '100px', flexShrink: 0, border: '1px solid #eee', borderRadius: '6px', cursor: 'pointer' }}
               src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'}/qr-code?text=${encodeURIComponent(qrText)}`} 
               alt="QR Code" 
+              preview={{
+                mask: <div className="text-xs">Xem to</div>
+              }}
             />
-            <div className="decal-info" style={{ flexGrow: 1, minWidth: 0 }}>
-              <div 
-                className="decal-title"
-                style={{ 
-                  fontSize: '14px', 
-                  fontWeight: 700, 
-                  margin: '0 0 6px 0', 
-                  color: '#111',
-                  lineHeight: 1.3
-                }}
-              >
-                {row.productName}
+            <Button 
+              size="small" 
+              type="text" 
+              icon={<DownloadOutlined />} 
+              onClick={() => handleDownloadQr(qrText, downloadFileName)}
+              className="no-print"
+              style={{ fontSize: '11px', color: '#1890ff', height: '22px', padding: '0 4px' }}
+            >
+              Tải ảnh
+            </Button>
+          </div>
+          <div className="decal-info" style={{ flexGrow: 1, minWidth: 0 }}>
+            <div 
+              className="decal-title"
+              style={{ 
+                fontSize: '14px', 
+                fontWeight: 700, 
+                margin: '0 0 6px 0', 
+                color: '#111',
+                lineHeight: 1.3
+              }}
+            >
+              {row.productName}
+            </div>
+            <div className="decal-text" style={{ fontSize: '12px', margin: '3px 0', color: '#555' }}>SKU: {row.productSku}</div>
+            {row.batchNumber && (
+              <div className="decal-batch" style={{ fontSize: '13px', margin: '3px 0', fontWeight: 700, color: '#000' }}>
+                Lô: {row.batchNumber}
               </div>
-              <div className="decal-text" style={{ fontSize: '12px', margin: '3px 0', color: '#555' }}>SKU: {row.productSku}</div>
-              {row.batchNumber && (
-                <div className="decal-batch" style={{ fontSize: '13px', margin: '3px 0', fontWeight: 700, color: '#000' }}>
-                  Lô: {row.batchNumber}
-                </div>
-              )}
-              {row.expiryDate && (
-                <div className="decal-text" style={{ fontSize: '12px', margin: '3px 0', color: '#555' }}>
-                  HSD: {new Date(row.expiryDate).toLocaleDateString('vi-VN')}
-                </div>
-              )}
-              <div className="decal-location" style={{ fontSize: '11px', margin: '4px 0 0 0', color: '#888', paddingTop: '4px', borderTop: '1px solid #eee' }}>
-                📍 {row.warehouseName} — {row.locationName}
+            )}
+            <div style={{ fontSize: '13px', margin: '3px 0', fontWeight: 700, color: '#1890ff' }}>
+              Số lượng: {qty}
+            </div>
+            {row.expiryDate && (
+              <div className="decal-text" style={{ fontSize: '12px', margin: '3px 0', color: '#555' }}>
+                HSD: {new Date(row.expiryDate).toLocaleDateString('vi-VN')}
               </div>
+            )}
+            <div className="decal-location" style={{ fontSize: '11px', margin: '4px 0 0 0', color: '#888', paddingTop: '4px', borderTop: '1px solid #eee' }}>
+              📍 {row.warehouseName} — {row.locationName}
             </div>
           </div>
-        );
-      }
+        </div>
+      );
     });
     return items;
   };

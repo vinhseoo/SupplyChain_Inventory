@@ -131,32 +131,49 @@ public class StocktakeSessionServiceImpl implements StocktakeSessionService {
             throw new BusinessException("Vi tri quet khong thuoc kho hang cua phien kiem ke");
         }
 
+        String rawCode = request.getCode();
+        BigDecimal scanQty = BigDecimal.ONE;
+
+        if (rawCode.contains(":QTY:")) {
+            String[] parts = rawCode.split(":QTY:");
+            rawCode = parts[0];
+            try {
+                scanQty = new BigDecimal(parts[1]);
+            } catch (Exception e) {
+                log.warn("Invalid quantity format in scanned barcode: {}, fallback to 1", parts[1]);
+            }
+        }
+
         Product product;
         ProductBatch batch = null;
 
-        if (request.getCode().startsWith("SCIM:BATCH:")) {
-            String batchNumber = request.getCode().substring("SCIM:BATCH:".length());
+        if (rawCode.startsWith("SCIM:BATCH:")) {
+            String batchNumber = rawCode.substring("SCIM:BATCH:".length());
             batch = productBatchRepository.findByBatchNumber(batchNumber)
                     .orElseThrow(() -> new ResourceNotFoundException("ProductBatch", "batchNumber", batchNumber));
             product = batch.getProduct();
+        } else if (rawCode.startsWith("SCIM:PROD:")) {
+            String sku = rawCode.substring("SCIM:PROD:".length());
+            product = productRepository.findBySku(sku)
+                    .orElseThrow(() -> new ResourceNotFoundException("Product", "sku", sku));
         } else {
-            product = productRepository.findByBarcode(request.getCode())
-                    .or(() -> productRepository.findBySku(request.getCode()))
-                    .orElseThrow(() -> new ResourceNotFoundException("Product", "barcode/sku", request.getCode()));
+            product = productRepository.findByBarcode(rawCode)
+                    .or(() -> productRepository.findBySku(rawCode))
+                    .orElseThrow(() -> new ResourceNotFoundException("Product", "barcode/sku", rawCode));
         }
 
-        processScannedProduct(session, product, location, batch);
+        processScannedProduct(session, product, location, batch, scanQty);
         return getById(id);
     }
 
-    private void processScannedProduct(StocktakeSession session, Product product, Location location, ProductBatch batch) {
+    private void processScannedProduct(StocktakeSession session, Product product, Location location, ProductBatch batch, BigDecimal scanQty) {
         Long batchId = batch != null ? batch.getId() : null;
         Optional<StocktakeItem> existingItem = itemRepository.findBySessionAndDetails(
                 session.getId(), product.getId(), location.getId(), batchId);
 
         if (existingItem.isPresent()) {
             StocktakeItem item = existingItem.get();
-            item.setActualQuantity(item.getActualQuantity().add(BigDecimal.ONE));
+            item.setActualQuantity(item.getActualQuantity().add(scanQty));
             item.setVariance(item.getActualQuantity().subtract(item.getSystemQuantity()));
             itemRepository.save(item);
         } else {
@@ -170,8 +187,8 @@ public class StocktakeSessionServiceImpl implements StocktakeSessionService {
                     .location(location)
                     .batch(batch)
                     .systemQuantity(systemQty)
-                    .actualQuantity(BigDecimal.ONE)
-                    .variance(BigDecimal.ONE.subtract(systemQty))
+                    .actualQuantity(scanQty)
+                    .variance(scanQty.subtract(systemQty))
                     .build();
             itemRepository.save(item);
         }
