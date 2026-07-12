@@ -223,7 +223,7 @@ export const BatchQrPrintPage = () => {
           >
             <img 
               style={{ width: '80px', height: '80px', flexShrink: 0 }}
-              src={`/api/qr-code?text=${encodeURIComponent(qrText)}`} 
+              src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'}/qr-code?text=${encodeURIComponent(qrText)}`} 
               alt="QR Code" 
             />
             <div style={{ flexGrow: 1, minWidth: 0 }}>
