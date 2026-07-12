@@ -22,6 +22,8 @@ public interface StockLevelRepository extends JpaRepository<StockLevel, Long> {
                                         @Param("locationId") Long locationId,
                                         @Param("batchId") Long batchId);
 
+    List<StockLevel> findByWarehouseId(Long warehouseId);
+
     @Query("SELECT SUM(sl.quantity) FROM StockLevel sl WHERE sl.product.id = :productId")
     Optional<BigDecimal> getTotalStockByProduct(@Param("productId") Long productId);
 

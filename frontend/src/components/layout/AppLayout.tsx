@@ -63,9 +63,14 @@ export const AppLayout: FC = () => {
       ],
     },
     {
-      key: '/stocktake',
+      key: 'stocktake-group',
       icon: <BarcodeOutlined />,
-      label: 'Kiểm kê QR/Barcode',
+      label: 'Kiểm kê & QR Code',
+      children: [
+        { key: '/stocktake/sessions', label: 'Đợt kiểm kê kho' },
+        { key: '/stocktake/adjustments', label: 'Phiếu điều chỉnh tồn' },
+        { key: '/stocktake/qr-print', label: 'In nhãn decal QR Code' },
+      ]
     },
     {
       key: 'settings-group',
@@ -107,6 +112,15 @@ export const AppLayout: FC = () => {
         }
         if (item.key === '/inventory/stock-card') {
           return hasPermission('GET:/api/inventory/stock-levels/history') ? item : null;
+        }
+        if (item.key === '/stocktake/sessions') {
+          return hasPermission('GET:/api/stocktake/sessions') ? item : null;
+        }
+        if (item.key === '/stocktake/adjustments') {
+          return hasPermission('GET:/api/stock-adjustments') ? item : null;
+        }
+        if (item.key === '/stocktake/qr-print') {
+          return hasPermission('GET:/api/inventory/stock-levels') ? item : null;
         }
         return item;
       })

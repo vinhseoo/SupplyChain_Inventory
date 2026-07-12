@@ -16,6 +16,11 @@ const TransactionFormPage = lazy(() => import('./features/inventory/pages/Transa
 const StockLevelListPage = lazy(() => import('./features/inventory/pages/StockLevelListPage'));
 const StockCardPage = lazy(() => import('./features/inventory/pages/StockCardPage'));
 
+const StocktakeListPage = lazy(() => import('./features/stocktake/pages/StocktakeListPage'));
+const StocktakeSessionPage = lazy(() => import('./features/stocktake/pages/StocktakeSessionPage'));
+const StockAdjustmentListPage = lazy(() => import('./features/stocktake/pages/StockAdjustmentListPage'));
+const BatchQrPrintPage = lazy(() => import('./features/stocktake/pages/BatchQrPrintPage'));
+
 const LoadingFallback = () => (
   <div className="flex justify-center items-center h-screen bg-gray-50">
     <Spin size="large" tip="Đang tải hệ thống..." />
@@ -42,6 +47,11 @@ export const AppRoutes = () => {
           <Route path="/inventory/transactions/edit/:id" element={<TransactionFormPage />} />
           <Route path="/inventory/stock-levels" element={<StockLevelListPage />} />
           <Route path="/inventory/stock-card" element={<StockCardPage />} />
+          
+          <Route path="/stocktake/sessions" element={<StocktakeListPage />} />
+          <Route path="/stocktake/sessions/:id" element={<StocktakeSessionPage />} />
+          <Route path="/stocktake/adjustments" element={<StockAdjustmentListPage />} />
+          <Route path="/stocktake/qr-print" element={<BatchQrPrintPage />} />
           {/* Default redirect inside AppLayout */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Route>

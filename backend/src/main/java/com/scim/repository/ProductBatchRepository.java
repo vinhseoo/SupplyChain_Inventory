@@ -12,6 +12,8 @@ public interface ProductBatchRepository extends JpaRepository<ProductBatch, Long
 
     Optional<ProductBatch> findByProductIdAndBatchNumber(Long productId, String batchNumber);
 
+    Optional<ProductBatch> findByBatchNumber(String batchNumber);
+
     @Query("SELECT pb FROM ProductBatch pb WHERE pb.product.id = :productId " +
            "AND pb.remainingQuantity > 0 " +
            "ORDER BY pb.expiryDate ASC NULLS LAST, pb.productionDate ASC NULLS LAST, pb.id ASC")
