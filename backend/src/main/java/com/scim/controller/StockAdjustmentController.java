@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,7 +24,6 @@ public class StockAdjustmentController {
 
     @GetMapping
     @Operation(summary = "Get list of stock adjustments", description = "Retrieve stock adjustments paginated with optional search, warehouse, and status filters")
-    @PreAuthorize("hasAuthority('stocktake:read')")
     public ResponseEntity<ApiResponse<PageResponse<StockAdjustmentResponse>>> getAll(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Long warehouseId,
@@ -36,7 +34,6 @@ public class StockAdjustmentController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get stock adjustment by ID", description = "Retrieve detailed information of a stock adjustment session including adjusted items")
-    @PreAuthorize("hasAuthority('stocktake:read')")
     public ResponseEntity<ApiResponse<StockAdjustmentResponse>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok(stockAdjustmentService.getById(id)));
     }

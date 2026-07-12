@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,7 +27,6 @@ public class AuditLogController {
 
     @GetMapping("/activity")
     @Operation(summary = "Get user activity logs", description = "Retrieve list of high-level user actions with optional search filter")
-    @PreAuthorize("hasAuthority('audit:read')")
     public ResponseEntity<ApiResponse<PageResponse<ActivityLogResponse>>> getActivityLogs(
             @RequestParam(required = false) String search,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -37,7 +35,6 @@ public class AuditLogController {
 
     @GetMapping("/data")
     @Operation(summary = "Get data audit logs", description = "Retrieve list of detailed field modifications for master data entities")
-    @PreAuthorize("hasAuthority('audit:read')")
     public ResponseEntity<ApiResponse<PageResponse<AuditLogResponse>>> getAuditLogs(
             @RequestParam(required = false) String entityName,
             @RequestParam(required = false) Long entityId,

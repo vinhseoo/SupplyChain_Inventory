@@ -18,7 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,7 +30,6 @@ public class StocktakeSessionController {
 
     @GetMapping
     @Operation(summary = "Get list of stocktake sessions", description = "Retrieve stocktake sessions paginated with optional search, warehouse, and status filters")
-    @PreAuthorize("hasAuthority('stocktake:read')")
     public ResponseEntity<ApiResponse<PageResponse<StocktakeSessionResponse>>> getAll(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Long warehouseId,
@@ -42,14 +40,12 @@ public class StocktakeSessionController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get stocktake session by ID", description = "Retrieve detailed information of a stocktake session including scanned items")
-    @PreAuthorize("hasAuthority('stocktake:read')")
     public ResponseEntity<ApiResponse<StocktakeSessionResponse>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok(stocktakeSessionService.getById(id)));
     }
 
     @PostMapping
     @Operation(summary = "Create a new stocktake session", description = "Initializes a session at a warehouse, auto-populating items from system stock levels")
-    @PreAuthorize("hasAuthority('stocktake:write')")
     public ResponseEntity<ApiResponse<StocktakeSessionResponse>> create(@Valid @RequestBody StocktakeSessionRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.ok(stocktakeSessionService.create(request)));
@@ -57,7 +53,6 @@ public class StocktakeSessionController {
 
     @PutMapping("/{id}/items/{itemId}")
     @Operation(summary = "Manually update scanned quantity", description = "Update actual quantity and recalculate variance of a specific stocktake item")
-    @PreAuthorize("hasAuthority('stocktake:write')")
     public ResponseEntity<ApiResponse<StocktakeSessionResponse>> updateItemQty(
             @PathVariable Long id,
             @PathVariable Long itemId,
@@ -67,7 +62,6 @@ public class StocktakeSessionController {
 
     @PostMapping("/{id}/scan")
     @Operation(summary = "Scan barcode or QR code", description = "Process scanned batch/product barcode at a location and increment actual quantity")
-    @PreAuthorize("hasAuthority('stocktake:write')")
     public ResponseEntity<ApiResponse<StocktakeSessionResponse>> scanBarcode(
             @PathVariable Long id,
             @Valid @RequestBody BarcodeScanRequest request) {
@@ -76,21 +70,18 @@ public class StocktakeSessionController {
 
     @PostMapping("/{id}/complete")
     @Operation(summary = "Complete scanning for session", description = "Freeze session scanning and finalize variance calculations")
-    @PreAuthorize("hasAuthority('stocktake:write')")
     public ResponseEntity<ApiResponse<StocktakeSessionResponse>> complete(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok(stocktakeSessionService.complete(id)));
     }
 
     @PostMapping("/{id}/cancel")
     @Operation(summary = "Cancel stocktake session", description = "Void stocktake session and cancel scanning")
-    @PreAuthorize("hasAuthority('stocktake:write')")
     public ResponseEntity<ApiResponse<StocktakeSessionResponse>> cancel(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok(stocktakeSessionService.cancel(id)));
     }
 
     @PostMapping("/{id}/adjust")
     @Operation(summary = "Generate stock adjustment", description = "Create approved stock adjustment based on variance, applying updates to actual stock levels")
-    @PreAuthorize("hasAuthority('stocktake:write')")
     public ResponseEntity<ApiResponse<StockAdjustmentResponse>> createAdjustment(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok(stocktakeSessionService.createAdjustment(id)));
     }

@@ -232,7 +232,7 @@ features/<feature-name>/
 ### 8.1 Backend
 - JWT access token: 15 phút, refresh token: 7 ngày.
 - Password: BCrypt encoding, min 8 characters.
-- Method-level security: `@PreAuthorize("hasAuthority('resource:action')")`.
+- Phân quyền (Authorization): Sử dụng phân quyền động dựa trên HTTP Method và URL pattern (thông qua `DynamicAuthorizationManager`). KHÔNG sử dụng `@PreAuthorize` ở mức Controller hay Service.
 - CORS: chỉ whitelist specific origins.
 - Input validation trên TẤT CẢ request DTOs.
 - KHÔNG log passwords, tokens, hoặc sensitive data.

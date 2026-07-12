@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,21 +23,18 @@ public class SystemSettingController {
 
     @GetMapping
     @Operation(summary = "Get all system settings", description = "Retrieve list of all key-value configurations in the system")
-    @PreAuthorize("hasAuthority('setting:read')")
     public ResponseEntity<ApiResponse<List<SystemSettingResponse>>> getAll() {
         return ResponseEntity.ok(ApiResponse.ok(systemSettingService.getAll()));
     }
 
     @GetMapping("/{key}")
     @Operation(summary = "Get setting by key", description = "Retrieve details of a system setting by its configuration key")
-    @PreAuthorize("hasAuthority('setting:read')")
     public ResponseEntity<ApiResponse<SystemSettingResponse>> getByKey(@PathVariable String key) {
         return ResponseEntity.ok(ApiResponse.ok(systemSettingService.getByKey(key)));
     }
 
     @PutMapping("/{key}")
     @Operation(summary = "Update system setting", description = "Update the configuration value of a specific system setting key")
-    @PreAuthorize("hasAuthority('setting:write')")
     public ResponseEntity<ApiResponse<SystemSettingResponse>> update(
             @PathVariable String key,
             @Valid @RequestBody SystemSettingRequest request) {
