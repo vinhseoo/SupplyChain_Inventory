@@ -10,9 +10,9 @@ import org.springframework.data.repository.query.Param;
 public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
 
     @Query("SELECT a FROM AuditLog a WHERE " +
-           "(:entityName IS NULL OR LOWER(a.entityName) = LOWER(:entityName)) AND " +
+           "(CAST(:entityName AS string) IS NULL OR LOWER(a.entityName) = LOWER(CAST(:entityName AS string))) AND " +
            "(:entityId IS NULL OR a.entityId = :entityId) AND " +
-           "(:action IS NULL OR a.action = :action)")
+           "(CAST(:action AS string) IS NULL OR a.action = CAST(:action AS string))")
     Page<AuditLog> findWithFilters(@Param("entityName") String entityName,
                                    @Param("entityId") Long entityId,
                                    @Param("action") String action,
