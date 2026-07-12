@@ -29,6 +29,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.context.ApplicationEventPublisher;
+import com.scim.event.TransactionStatusEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +59,7 @@ public class InventoryTransactionServiceImpl implements InventoryTransactionServ
     private final InventoryTransactionMapper transactionMapper;
     private final StockLevelMapper stockLevelMapper;
     private final StringRedisTemplate redisTemplate;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional(readOnly = true)
@@ -151,6 +154,7 @@ public class InventoryTransactionServiceImpl implements InventoryTransactionServ
 
         transaction.setStatus(TransactionStatus.PENDING);
         transaction = transactionRepository.save(transaction);
+        eventPublisher.publishEvent(new TransactionStatusEvent(this, transaction));
         log.info("Submitted transaction for approval: {}", transaction.getCode());
         return transactionMapper.toResponse(transaction);
     }
@@ -167,6 +171,7 @@ public class InventoryTransactionServiceImpl implements InventoryTransactionServ
 
         transaction.setStatus(TransactionStatus.APPROVED);
         transaction = transactionRepository.save(transaction);
+        eventPublisher.publishEvent(new TransactionStatusEvent(this, transaction));
         log.info("Approved transaction: {}", transaction.getCode());
         return transactionMapper.toResponse(transaction);
     }
@@ -186,6 +191,7 @@ public class InventoryTransactionServiceImpl implements InventoryTransactionServ
             transaction.setNote(transaction.getNote() != null ? transaction.getNote() + " | Lý do từ chối: " + reason : "Lý do từ chối: " + reason);
         }
         transaction = transactionRepository.save(transaction);
+        eventPublisher.publishEvent(new TransactionStatusEvent(this, transaction));
         log.info("Rejected transaction: {}", transaction.getCode());
         return transactionMapper.toResponse(transaction);
     }
@@ -230,6 +236,7 @@ public class InventoryTransactionServiceImpl implements InventoryTransactionServ
 
             transaction.setStatus(TransactionStatus.COMPLETED);
             transaction = transactionRepository.save(transaction);
+            eventPublisher.publishEvent(new TransactionStatusEvent(this, transaction));
             log.info("Completed transaction and updated stock: {}", transaction.getCode());
             return transactionMapper.toResponse(transaction);
 

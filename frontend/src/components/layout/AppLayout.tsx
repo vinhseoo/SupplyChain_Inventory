@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { FC } from 'react';
-import { Layout, Menu, Button, Avatar, Dropdown, Badge } from 'antd';
+import { Layout, Menu, Button, Avatar, Dropdown, Badge, Popover, List, Tag, message } from 'antd';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -18,6 +18,12 @@ import {
 } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
+import {
+  useUnreadNotificationCount,
+  useNotifications,
+  useMarkNotificationRead,
+  useMarkAllNotificationsRead
+} from '@/features/system/hooks/useNotifications';
 
 const { Header, Sider, Content } = Layout;
 
@@ -27,6 +33,11 @@ export const AppLayout: FC = () => {
   const location = useLocation();
   const { user, logout, hasPermission } = useAuthStore();
 
+  const { data: unreadCount = 0 } = useUnreadNotificationCount();
+  const { data: latestNotifs } = useNotifications({ size: 5 });
+  const markReadMutation = useMarkNotificationRead();
+  const markAllReadMutation = useMarkAllNotificationsRead();
+
   const handleMenuClick = ({ key }: { key: string }) => {
     if (key === 'logout') {
       logout();
@@ -35,6 +46,72 @@ export const AppLayout: FC = () => {
       navigate(key);
     }
   };
+
+  const handleMarkAllRead = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    markAllReadMutation.mutate(undefined, {
+      onSuccess: () => {
+        message.success('Đã đánh dấu tất cả thông báo là đã đọc');
+      }
+    });
+  };
+
+  const handleNotifClick = (id: number) => {
+    markReadMutation.mutate(id);
+    navigate('/notifications');
+  };
+
+  const getNotifTagColor = (type: string) => {
+    switch (type) {
+      case 'WARNING': return 'warning';
+      case 'SUCCESS': return 'success';
+      case 'ERROR': return 'error';
+      default: return 'info';
+    }
+  };
+
+  const notificationContent = (
+    <div style={{ width: 320 }}>
+      <div className="flex justify-between items-center pb-2 border-b border-gray-100 mb-2">
+        <span className="font-semibold text-gray-800">Thông báo mới nhận</span>
+        {unreadCount > 0 && (
+          <Button type="link" size="small" onClick={handleMarkAllRead} style={{ padding: 0, fontSize: '12px' }}>
+            Đọc tất cả
+          </Button>
+        )}
+      </div>
+      <List
+        size="small"
+        dataSource={latestNotifs?.content || []}
+        locale={{ emptyText: 'Không có thông báo mới' }}
+        renderItem={(item: any) => (
+          <List.Item 
+            className={`cursor-pointer hover:bg-blue-50/50 p-2 rounded transition-colors ${!item.isRead ? 'bg-blue-50/20' : ''}`}
+            onClick={() => handleNotifClick(item.id)}
+            style={{ borderBottom: '1px solid #f5f5f5', padding: '8px' }}
+          >
+            <div className="flex flex-col gap-1 w-full">
+              <div className="flex justify-between items-start gap-2">
+                <span className={`font-medium text-xs ${!item.isRead ? 'text-gray-900 font-bold' : 'text-gray-600'}`}>
+                  {item.title}
+                </span>
+                <Tag color={getNotifTagColor(item.type)} style={{ fontSize: '9px', lineHeight: '14px', height: '16px', margin: 0 }}>
+                  {item.type}
+                </Tag>
+              </div>
+              <span className="text-[11px] text-gray-500 line-clamp-2">{item.content}</span>
+              <span className="text-[9px] text-gray-400 mt-1">{new Date(item.createdAt).toLocaleString()}</span>
+            </div>
+          </List.Item>
+        )}
+      />
+      <div className="text-center pt-2 border-t border-gray-100 mt-2">
+        <Button type="link" size="small" onClick={() => navigate('/notifications')} style={{ fontSize: '12px' }}>
+          Xem tất cả thông báo
+        </Button>
+      </div>
+    </div>
+  );
 
   const menuItems = [
     {
@@ -78,7 +155,8 @@ export const AppLayout: FC = () => {
       label: 'Hệ thống',
       children: [
         { key: '/users', label: 'Người dùng & Quyền', icon: <UserOutlined /> },
-        { key: '/settings', label: 'Cấu hình chung' },
+        { key: '/settings/system', label: 'Cấu hình hệ thống' },
+        { key: '/settings/audit-logs', label: 'Nhật ký hệ thống' },
       ],
     },
   ];
@@ -121,6 +199,12 @@ export const AppLayout: FC = () => {
         }
         if (item.key === '/stocktake/qr-print') {
           return hasPermission('GET:/api/inventory/stock-levels') ? item : null;
+        }
+        if (item.key === '/settings/system') {
+          return hasPermission('GET:/api/system-settings') ? item : null;
+        }
+        if (item.key === '/settings/audit-logs') {
+          return hasPermission('GET:/api/audit-logs/activity') ? item : null;
         }
         return item;
       })
@@ -177,9 +261,11 @@ export const AppLayout: FC = () => {
             className="text-lg w-10 h-10 flex items-center justify-center"
           />
           <div className="flex items-center gap-6">
-            <Badge count={5} size="small" className="cursor-pointer">
-              <BellOutlined className="text-xl text-gray-600 hover:text-blue-600 transition-colors" />
-            </Badge>
+            <Popover content={notificationContent} title={null} trigger="click" placement="bottomRight" arrow>
+              <Badge count={unreadCount} size="small" className="cursor-pointer">
+                <BellOutlined className="text-xl text-gray-600 hover:text-blue-600 transition-colors" />
+              </Badge>
+            </Popover>
 
             <Dropdown menu={{ items: userDropdownItems, onClick: handleMenuClick }} placement="bottomRight" arrow>
               <div className="flex items-center gap-2 cursor-pointer">

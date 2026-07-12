@@ -21,6 +21,10 @@ const StocktakeSessionPage = lazy(() => import('./features/stocktake/pages/Stock
 const StockAdjustmentListPage = lazy(() => import('./features/stocktake/pages/StockAdjustmentListPage'));
 const BatchQrPrintPage = lazy(() => import('./features/stocktake/pages/BatchQrPrintPage'));
 
+const NotificationListPage = lazy(() => import('./features/system/pages/NotificationListPage'));
+const SystemSettingsPage = lazy(() => import('./features/system/pages/SystemSettingsPage'));
+const AuditLogListPage = lazy(() => import('./features/system/pages/AuditLogListPage'));
+
 const LoadingFallback = () => (
   <div className="flex justify-center items-center h-screen bg-gray-50">
     <Spin size="large" tip="Đang tải hệ thống..." />
@@ -52,6 +56,10 @@ export const AppRoutes = () => {
           <Route path="/stocktake/sessions/:id" element={<StocktakeSessionPage />} />
           <Route path="/stocktake/adjustments" element={<StockAdjustmentListPage />} />
           <Route path="/stocktake/qr-print" element={<BatchQrPrintPage />} />
+
+          <Route path="/notifications" element={<NotificationListPage />} />
+          <Route path="/settings/system" element={<SystemSettingsPage />} />
+          <Route path="/settings/audit-logs" element={<AuditLogListPage />} />
           {/* Default redirect inside AppLayout */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Route>
