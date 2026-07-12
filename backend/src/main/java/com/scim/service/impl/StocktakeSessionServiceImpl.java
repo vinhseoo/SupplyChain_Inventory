@@ -144,22 +144,23 @@ public class StocktakeSessionServiceImpl implements StocktakeSessionService {
             }
         }
 
+        final String searchCode = rawCode;
         Product product;
         ProductBatch batch = null;
 
-        if (rawCode.startsWith("SCIM:BATCH:")) {
-            String batchNumber = rawCode.substring("SCIM:BATCH:".length());
+        if (searchCode.startsWith("SCIM:BATCH:")) {
+            String batchNumber = searchCode.substring("SCIM:BATCH:".length());
             batch = productBatchRepository.findByBatchNumber(batchNumber)
                     .orElseThrow(() -> new ResourceNotFoundException("ProductBatch", "batchNumber", batchNumber));
             product = batch.getProduct();
-        } else if (rawCode.startsWith("SCIM:PROD:")) {
-            String sku = rawCode.substring("SCIM:PROD:".length());
+        } else if (searchCode.startsWith("SCIM:PROD:")) {
+            String sku = searchCode.substring("SCIM:PROD:".length());
             product = productRepository.findBySku(sku)
                     .orElseThrow(() -> new ResourceNotFoundException("Product", "sku", sku));
         } else {
-            product = productRepository.findByBarcode(rawCode)
-                    .or(() -> productRepository.findBySku(rawCode))
-                    .orElseThrow(() -> new ResourceNotFoundException("Product", "barcode/sku", rawCode));
+            product = productRepository.findByBarcode(searchCode)
+                    .or(() -> productRepository.findBySku(searchCode))
+                    .orElseThrow(() -> new ResourceNotFoundException("Product", "barcode/sku", searchCode));
         }
 
         processScannedProduct(session, product, location, batch, scanQty);
