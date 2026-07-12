@@ -67,14 +67,28 @@ public class AuditLogServiceImpl implements AuditLogService {
     @Transactional(readOnly = true)
     public PageResponse<AuditLogResponse> getAuditLogs(String entityName, Long entityId, String action, Pageable pageable) {
         Page<AuditLog> page = auditLogRepository.findWithFilters(entityName, entityId, action, pageable);
-        return new PageResponse<>(page.map(auditLogMapper::toResponse));
+        Page<AuditLogResponse> responsePage = page.map(auditLogMapper::toResponse);
+        return PageResponse.of(
+                responsePage.getContent(),
+                responsePage.getNumber(),
+                responsePage.getSize(),
+                responsePage.getTotalElements(),
+                responsePage.getTotalPages()
+        );
     }
 
     @Override
     @Transactional(readOnly = true)
     public PageResponse<ActivityLogResponse> getActivityLogs(String search, Pageable pageable) {
         Page<ActivityLog> page = activityLogRepository.findWithFilters(search, pageable);
-        return new PageResponse<>(page.map(activityLogMapper::toResponse));
+        Page<ActivityLogResponse> responsePage = page.map(activityLogMapper::toResponse);
+        return PageResponse.of(
+                responsePage.getContent(),
+                responsePage.getNumber(),
+                responsePage.getSize(),
+                responsePage.getTotalElements(),
+                responsePage.getTotalPages()
+        );
     }
 
     private String getClientIp() {

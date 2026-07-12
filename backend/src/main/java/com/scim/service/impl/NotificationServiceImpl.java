@@ -55,7 +55,14 @@ public class NotificationServiceImpl implements NotificationService {
     public PageResponse<NotificationResponse> getMyNotifications(Boolean isRead, Pageable pageable) {
         User currentUser = getCurrentUser();
         Page<Notification> page = notificationRepository.findByUserIdOrUserIsNull(currentUser.getId(), isRead, pageable);
-        return new PageResponse<>(page.map(notificationMapper::toResponse));
+        Page<NotificationResponse> responsePage = page.map(notificationMapper::toResponse);
+        return PageResponse.of(
+                responsePage.getContent(),
+                responsePage.getNumber(),
+                responsePage.getSize(),
+                responsePage.getTotalElements(),
+                responsePage.getTotalPages()
+        );
     }
 
     @Override

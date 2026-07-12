@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -72,17 +73,17 @@ public class InventoryAlertScheduler {
 
     private void checkExpiryAlerts() {
         Integer expiryDays = systemSettingService.getIntValue("ALERT_EXPIRY_DAYS", 30);
-        LocalDateTime thresholdDate = LocalDateTime.now().plusDays(expiryDays);
+        LocalDate thresholdDate = LocalDate.now().plusDays(expiryDays);
 
         List<ProductBatch> expiringBatches = productBatchRepository.findAll().stream()
                 .filter(b -> b.getRemainingQuantity() != null && b.getRemainingQuantity().compareTo(BigDecimal.ZERO) > 0)
-                .filter(b -> b.getExpiryDate() != null && b.getExpiryDate().isBefore(thresholdDate) && b.getExpiryDate().isAfter(LocalDateTime.now()))
+                .filter(b -> b.getExpiryDate() != null && b.getExpiryDate().isBefore(thresholdDate) && b.getExpiryDate().isAfter(LocalDate.now()))
                 .toList();
 
         for (ProductBatch batch : expiringBatches) {
             String title = "Cảnh báo lô hàng sắp hết hạn";
             String content = String.format("Lô hàng %s của sản phẩm %s sẽ hết hạn vào ngày %s. Số lượng còn lại: %s.",
-                    batch.getBatchNumber(), batch.getProduct().getName(), batch.getExpiryDate().toLocalDate(), batch.getRemainingQuantity());
+                    batch.getBatchNumber(), batch.getProduct().getName(), batch.getExpiryDate(), batch.getRemainingQuantity());
 
             // Prevent duplicates within 24 hours
             if (!notificationRepository.existsByTitleAndContentAndCreatedAtAfter(title, content, LocalDateTime.now().minusDays(1))) {
