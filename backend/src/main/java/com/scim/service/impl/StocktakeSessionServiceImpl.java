@@ -294,8 +294,6 @@ public class StocktakeSessionServiceImpl implements StocktakeSessionService {
                 .quantity(adjItem.getAdjustedQuantity())
                 .balanceBefore(oldQty)
                 .balanceAfter(newQty)
-                .referenceNumber(adjItem.getAdjustment().getCode())
-                .note("Dieu chinh kiem ke")
                 .build();
         stockMovementRepository.save(movement);
     }
