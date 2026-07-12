@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/qr-code")
+@RequestMapping("/qr-code")
 @RequiredArgsConstructor
 @Tag(name = "QR Code Utility", description = "APIs for generating QR Code images")
 public class QrCodeController {

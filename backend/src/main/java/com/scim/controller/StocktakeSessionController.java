@@ -22,7 +22,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/stocktake/sessions")
+@RequestMapping("/stocktake/sessions")
 @RequiredArgsConstructor
 @Tag(name = "Stocktake Sessions", description = "APIs for stocktaking sessions and audits")
 public class StocktakeSessionController {

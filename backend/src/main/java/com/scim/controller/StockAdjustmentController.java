@@ -16,7 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/stock-adjustments")
+@RequestMapping("/stock-adjustments")
 @RequiredArgsConstructor
 @Tag(name = "Stock Adjustments", description = "APIs for stock level adjustments")
 public class StockAdjustmentController {
