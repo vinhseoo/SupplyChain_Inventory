@@ -122,6 +122,22 @@ public class StocktakeSessionServiceImpl implements StocktakeSessionService {
 
     @Override
     @Transactional
+    public StocktakeSessionResponse deleteItem(Long id, Long itemId) {
+        StocktakeSession session = getActiveSession(id);
+        StocktakeItem item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ResourceNotFoundException("StocktakeItem", "id", itemId));
+
+        if (!item.getSession().getId().equals(id)) {
+            throw new BusinessException("Mat hang khong thuoc phien kiem ke nay");
+        }
+
+        itemRepository.delete(item);
+        log.info("Deleted stocktake item {} from session {}", itemId, id);
+        return getById(id);
+    }
+
+    @Override
+    @Transactional
     public StocktakeSessionResponse scanBarcode(Long id, BarcodeScanRequest request) {
         StocktakeSession session = getActiveSession(id);
         Location location = locationRepository.findById(request.getLocationId())

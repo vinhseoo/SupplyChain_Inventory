@@ -18,7 +18,8 @@ import {
   CloseOutlined, 
   SwapOutlined,
   EditOutlined,
-  SaveOutlined
+  SaveOutlined,
+  DeleteOutlined
 } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
 import { PageContainer } from '@/components/layout/PageContainer';
@@ -26,6 +27,7 @@ import { DataTable } from '@/components/common/DataTable';
 import { 
   useStocktakeSession, 
   useUpdateStocktakeItemQty, 
+  useDeleteStocktakeItem,
   useScanBarcode, 
   useCompleteStocktakeSession, 
   useCancelStocktakeSession,
@@ -67,6 +69,7 @@ export const StocktakeSessionPage = () => {
 
   // Mutations
   const updateQtyMutation = useUpdateStocktakeItemQty();
+  const deleteItemMutation = useDeleteStocktakeItem();
   const scanBarcodeMutation = useScanBarcode();
   const completeMutation = useCompleteStocktakeSession();
   const cancelMutation = useCancelStocktakeSession();
@@ -99,7 +102,7 @@ export const StocktakeSessionPage = () => {
 
   const handleInlineEditStart = (item: StocktakeItemResponse) => {
     setEditingItemId(item.id);
-    setEditingQty(item.actualQuantity);
+    setEditingQty(Math.round(item.actualQuantity));
   };
 
   const handleInlineEditSave = (itemId: number) => {
@@ -107,12 +110,19 @@ export const StocktakeSessionPage = () => {
       id: sessionId,
       itemId,
       data: {
-        actualQuantity: editingQty,
+        actualQuantity: Math.round(editingQty),
       }
     }, {
       onSuccess: () => {
         setEditingItemId(null);
       }
+    });
+  };
+
+  const handleDeleteItem = (itemId: number) => {
+    deleteItemMutation.mutate({
+      id: sessionId,
+      itemId
     });
   };
 
@@ -152,7 +162,7 @@ export const StocktakeSessionPage = () => {
       title: 'Vị trí',
       dataIndex: 'locationName',
       key: 'locationName',
-      width: 120,
+      width: 140,
     },
     {
       title: 'Số lô',
@@ -165,35 +175,36 @@ export const StocktakeSessionPage = () => {
       title: 'Tồn hệ thống',
       dataIndex: 'systemQuantity',
       key: 'systemQuantity',
-      width: 120,
+      width: 130,
       align: 'right',
       render: (qty: number, record) => (
         <span className="font-medium text-gray-600">
-          {qty} {record.uomName}
+          {Math.round(qty)} {record.uomName}
         </span>
       )
     },
     {
       title: 'Thực tế đếm',
       key: 'actualQuantity',
-      width: 150,
+      width: 160,
       align: 'right',
       render: (_, record) => {
         if (editingItemId === record.id) {
           return (
             <InputNumber
               min={0}
-              precision={4}
+              step={1}
+              precision={0}
               value={editingQty}
-              onChange={(val) => setEditingQty(val || 0)}
-              style={{ width: 100 }}
+              onChange={(val) => setEditingQty(val !== null ? Math.round(val) : 0)}
+              style={{ width: 90 }}
               onPressEnter={() => handleInlineEditSave(record.id)}
             />
           );
         }
         return (
           <span className="font-semibold text-gray-800">
-            {record.actualQuantity} {record.uomName}
+            {Math.round(record.actualQuantity)} {record.uomName}
           </span>
         );
       }
@@ -202,18 +213,19 @@ export const StocktakeSessionPage = () => {
       title: 'Chênh lệch',
       dataIndex: 'variance',
       key: 'variance',
-      width: 120,
+      width: 130,
       align: 'right',
       render: (val: number, record) => {
-        if (val === 0) return <span className="text-gray-400">0</span>;
-        if (val > 0) return <span className="text-emerald-600 font-semibold">+{val} {record.uomName}</span>;
-        return <span className="text-rose-600 font-semibold">{val} {record.uomName}</span>;
+        const roundedVal = Math.round(val);
+        if (roundedVal === 0) return <span className="text-gray-400">0</span>;
+        if (roundedVal > 0) return <span className="text-emerald-600 font-semibold">+{roundedVal} {record.uomName}</span>;
+        return <span className="text-rose-600 font-semibold">{roundedVal} {record.uomName}</span>;
       }
     },
     {
       title: 'Hành động',
       key: 'actions',
-      width: 100,
+      width: 120,
       align: 'center',
       render: (_, record) => {
         if (!isEditable) return null;
@@ -228,12 +240,31 @@ export const StocktakeSessionPage = () => {
           );
         }
         return (
-          <Button 
-            icon={<EditOutlined />} 
-            onClick={() => handleInlineEditStart(record)}
-            type="text"
-            size="small"
-          />
+          <Space size="small">
+            <Button 
+              icon={<EditOutlined />} 
+              onClick={() => handleInlineEditStart(record)}
+              type="text"
+              size="small"
+              title="Sửa số lượng"
+            />
+            <Popconfirm
+              title="Xóa dòng kiểm kê?"
+              description="Sản phẩm này sẽ bị xóa khỏi phiên kiểm kê."
+              onConfirm={() => handleDeleteItem(record.id)}
+              okText="Xóa"
+              cancelText="Hủy"
+              okButtonProps={{ danger: true }}
+            >
+              <Button 
+                icon={<DeleteOutlined />} 
+                danger
+                type="text"
+                size="small"
+                title="Xóa dòng"
+              />
+            </Popconfirm>
+          </Space>
         );
       }
     }

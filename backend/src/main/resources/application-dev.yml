@@ -3,8 +3,8 @@ spring:
   # PostgreSQL
   datasource:
     url: jdbc:postgresql://localhost:5432/scim_db
-    username: scim_user
-    password: scim_password
+    username: postgres
+    password: 12345678
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10

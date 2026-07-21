@@ -60,6 +60,14 @@ public class StocktakeSessionController {
         return ResponseEntity.ok(ApiResponse.ok(stocktakeSessionService.updateItemQty(id, itemId, request)));
     }
 
+    @DeleteMapping("/{id}/items/{itemId}")
+    @Operation(summary = "Delete item from stocktake session", description = "Remove a specific item line from the stocktake session")
+    public ResponseEntity<ApiResponse<StocktakeSessionResponse>> deleteItem(
+            @PathVariable Long id,
+            @PathVariable Long itemId) {
+        return ResponseEntity.ok(ApiResponse.ok(stocktakeSessionService.deleteItem(id, itemId)));
+    }
+
     @PostMapping("/{id}/scan")
     @Operation(summary = "Scan barcode or QR code", description = "Process scanned batch/product barcode at a location and increment actual quantity")
     public ResponseEntity<ApiResponse<StocktakeSessionResponse>> scanBarcode(

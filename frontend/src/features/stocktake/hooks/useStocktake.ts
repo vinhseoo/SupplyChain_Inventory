@@ -50,6 +50,22 @@ export const useUpdateStocktakeItemQty = () => {
   });
 };
 
+export const useDeleteStocktakeItem = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, itemId }: { id: number; itemId: number }) =>
+      stocktakeService.deleteItem(id, itemId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['stocktake-sessions'] });
+      queryClient.invalidateQueries({ queryKey: ['stocktake-session', variables.id] });
+      message.success('Đã xóa sản phẩm khỏi phiên kiểm kê');
+    },
+    onError: (err: any) => {
+      message.error(err.response?.data?.message || 'Xóa sản phẩm thất bại');
+    }
+  });
+};
+
 export const useScanBarcode = () => {
   const queryClient = useQueryClient();
   return useMutation({

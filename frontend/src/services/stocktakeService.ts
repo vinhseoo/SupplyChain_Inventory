@@ -40,6 +40,10 @@ export const stocktakeService = {
     return apiClient.put(`/stocktake/sessions/${id}/items/${itemId}`, data);
   },
 
+  deleteItem: (id: number, itemId: number): Promise<ApiResponse<StocktakeSessionResponse>> => {
+    return apiClient.delete(`/stocktake/sessions/${id}/items/${itemId}`);
+  },
+
   scanBarcode: (id: number, data: BarcodeScanRequest): Promise<ApiResponse<StocktakeSessionResponse>> => {
     return apiClient.post(`/stocktake/sessions/${id}/scan`, data);
   },

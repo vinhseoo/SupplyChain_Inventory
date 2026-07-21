@@ -17,5 +17,6 @@ public interface StocktakeSessionService {
     StocktakeSessionResponse scanBarcode(Long id, BarcodeScanRequest request);
     StocktakeSessionResponse complete(Long id);
     StocktakeSessionResponse cancel(Long id);
+    StocktakeSessionResponse deleteItem(Long id, Long itemId);
     StockAdjustmentResponse createAdjustment(Long id);
 }
