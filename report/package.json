@@ -1,6 +1,13 @@
 {
+  "name": "report-compiler",
+  "version": "1.0.0",
+  "description": "Compiles markdown report to docx",
+  "main": "compile.js",
+  "scripts": {
+    "compile": "node compile.js"
+  },
   "dependencies": {
     "html-to-docx": "^1.8.0",
-    "marked": "^18.0.6"
+    "marked": "^12.0.0"
   }
 }
